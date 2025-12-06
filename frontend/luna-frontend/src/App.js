@@ -1,5 +1,5 @@
-import './style2.css';
-import { useState } from 'react';
+import "./style2.css";
+import { useState } from "react";
 import axios from "axios";
 
 function App() {
@@ -11,84 +11,108 @@ function App() {
 
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
+
   const [cart, setCart] = useState([]);
   const [search, setSearch] = useState("");
+
+  // ✉️ CONTACT FORM HANDLER
   const handleContactSubmit = async (e) => {
-  e.preventDefault();
-const handleSignup = async () => {
-  if (!signupEmail || !signupPassword) {
-    alert("Enter email & password");
-    return;
-  }
+    e.preventDefault();
 
-  try {
-    const res = await axios.post("http://localhost:5000/api/signup", {
-      email: signupEmail,
-      password: signupPassword
-    });
+    const form = e.target;
 
-    alert(res.data.message);
-    setShowSignup(false);
-  } catch (err) {
-    alert("Signup failed");
-  }
-};
+    const hasCartItems = cart.length > 0;
+    const orderTypeText = form.orderType.value.trim();
 
-// 🔥 STEP 3 — Login Function
-const handleLogin = async () => {
-  if (!loginEmail || !loginPassword) {
-    alert("Enter email & password");
-    return;
-  }
+    // Either: cart has items OR user must describe cake manually
+    if (!hasCartItems && !orderTypeText) {
+      alert(
+        "Either add items to your cart OR describe your cake in 'Cake / order type'."
+      );
+      return;
+    }
 
-  try {
-    const res = await axios.post("http://localhost:5000/api/login", {
-      email: loginEmail,
-      password: loginPassword
-    });
+    const data = {
+      name: form.name.value,
+      email: form.email.value,
+      phone: form.phone.value,
+      orderType: orderTypeText, // can be empty if using cart only
+      date: form.date.value,
+      message: form.message.value,
+      items: hasCartItems ? cart : [],
+      totalAmount: hasCartItems ? totalAmount : 0,
+    };
 
-    alert(res.data.message);
-    setShowLogin(false);
-  } catch (err) {
-    alert("Invalid login details");
-  }
-};
+    try {
+      const res = await fetch("http://localhost:5000/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
+      const result = await res.json();
+      alert(result.message || "Form submitted!");
 
-  const form = e.target;
-
-  const data = {
-    name: form[0].value,
-    email: form[1].value,
-    phone: form[2].value,
-    orderType: form[3].value,
-    date: form[4].value,
-    message: form[5].value,
+      form.reset();
+      if (hasCartItems) {
+        setCart([]); // clear cart only if it was used
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
-  try {
-    const res = await fetch("http://localhost:5000/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+  // 🟣 SIGNUP FUNCTION (FRONTEND -> BACKEND)
+  const handleSignup = async () => {
+    if (!signupEmail || !signupPassword) {
+      alert("Enter email & password");
+      return;
+    }
 
-    const result = await res.json();
-    alert(result.message || "Form submitted!");
-    form.reset();
-  } catch (err) {
-    console.error(err);
-    alert("Something went wrong. Please try again.");
-  }
+    try {
+      const res = await axios.post("http://localhost:5000/api/signup", {
+        email: signupEmail,
+        password: signupPassword,
+      });
+
+      alert(res.data.message || "Signup successful");
+      setShowSignup(false);
+    } catch (err) {
+      console.error("SIGNUP ERROR:", err);
+      alert(err.response?.data?.message || "Signup failed");
+    }
   };
 
+  // 🔵 LOGIN FUNCTION (FRONTEND -> BACKEND)
+  const handleLogin = async () => {
+    if (!loginEmail || !loginPassword) {
+      alert("Enter email & password");
+      return;
+    }
+
+    try {
+      const res = await axios.post("http://localhost:5000/api/login", {
+        email: loginEmail,
+        password: loginPassword,
+      });
+
+      alert(res.data.message || "Login successful");
+      setShowLogin(false);
+    } catch (err) {
+      console.error("LOGIN ERROR:", err);
+      alert(err.response?.data?.message || "Invalid login details");
+    }
+  };
+
+  // 🛒 CART LOGIC
   const addToCart = (item) => {
     setCart([...cart, item]);
   };
-  const removeFromCart = (indexToRemove) => {
-  setCart(cart.filter((_, index) => index !== indexToRemove));
-  };
 
+  const removeFromCart = (indexToRemove) => {
+    setCart(cart.filter((_, index) => index !== indexToRemove));
+  };
 
   const totalAmount = cart.reduce((sum, item) => {
     const num = Number(item.price.replace(/[^\d]/g, ""));
@@ -99,10 +123,8 @@ const handleLogin = async () => {
     <>
       {/* HERO + NAVBAR */}
       <section className="hero" id="home">
-
         <nav className="navbar">
           <div className="nav-inner">
-
             <div className="nav-brand">
               <div className="brand-name">Luna Bakery</div>
               <div className="brand-caption">Moonlit flavors, freshly baked.</div>
@@ -112,7 +134,9 @@ const handleLogin = async () => {
               className="nav-search"
               onSubmit={(e) => {
                 e.preventDefault();
-                document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });
+                document
+                  .getElementById("menu")
+                  .scrollIntoView({ behavior: "smooth" });
               }}
             >
               <input
@@ -133,19 +157,22 @@ const handleLogin = async () => {
               <a href="#contact">Contact</a>
               <a href="#cart">Cart</a>
 
-              <span className="auth-btn" onClick={() => setShowSignup(true)}>Sign Up</span>
-              <span className="auth-btn login" onClick={() => setShowLogin(true)}>Login</span>
-
+              <span className="auth-btn" onClick={() => setShowSignup(true)}>
+                Sign Up
+              </span>
+              <span className="auth-btn login" onClick={() => setShowLogin(true)}>
+                Login
+              </span>
             </div>
-
           </div>
         </nav>
 
         <div className="hero-content">
           <h1 className="hero-brand italic">Luna Bakery</h1>
-          <p className="hero-caption">Treat yourself to freshly baked happiness.</p>
+          <p className="hero-caption">
+            Treat yourself to freshly baked happiness.
+          </p>
         </div>
-
       </section>
 
       {/* ABOUT */}
@@ -153,9 +180,10 @@ const handleLogin = async () => {
         <div className="section-inner">
           <h2 className="section-title">About Us</h2>
           <p className="section-text center">
-            At Luna Bakery, we believe every treat should feel like a little piece of magic.
-            From freshly baked cakes to handcrafted pastries, we bring sweetness to your moments
-            with love and care. Our mission is simple to make your day brighter, one bite at a time.
+            At Luna Bakery, we believe every treat should feel like a little
+            piece of magic. From freshly baked cakes to handcrafted pastries, we
+            bring sweetness to your moments with love and care. Our mission is
+            simple to make your day brighter, one bite at a time.
           </p>
         </div>
       </section>
@@ -170,19 +198,69 @@ const handleLogin = async () => {
 
           <div className="menu-grid">
             {[
-              { name: "chocolate", title: "Classic Chocolate Cake", price: "₹550", img: "/images/classy chocolate.jpg" },
-              { name: "red velvet", title: "Red Velvet Delight", price: "₹580", img: "/images/red velvet.jpeg" },
-              { name: "black forest", title: "Black Forest Bliss", price: "₹520", img: "/images/balck-forest.jpeg" },
-              { name: "butterscotch", title: "Butterscotch Crunch", price: "₹540", img: "/images/butterscotch.jpg" },
-              { name: "strawberry", title: "Strawberry Cream Cake", price: "₹560", img: "/images/STRAWBERRYCAKE.webp" },
-              { name: "vanilla", title: "Vanilla Sprinkle Cake", price: "₹500", img: "/images/venila sprinkle.jpg" },
-              { name: "caramel", title: "Caramel Drizzle Cake", price: "₹590", img: "/images/caramel drizzle.webp" },
-              { name: "oreo", title: "Oreo Crunch Cake", price: "₹570", img: "/images/oreo crunch.jpeg" },
-              { name: "mango", title: "Mango Fresh Cream Cake", price: "₹580", img: "/images/mango.jpeg" },
-              { name: "coffee mocha", title: "Coffee Mocha Cake", price: "₹600", img: "/images/coffee2.jpeg" },
+              {
+                name: "chocolate",
+                title: "Classic Chocolate Cake",
+                price: "₹550",
+                img: "/images/classy chocolate.jpg",
+              },
+              {
+                name: "red velvet",
+                title: "Red Velvet Delight",
+                price: "₹580",
+                img: "/images/red velvet.jpeg",
+              },
+              {
+                name: "black forest",
+                title: "Black Forest Bliss",
+                price: "₹520",
+                img: "/images/balck-forest.jpeg",
+              },
+              {
+                name: "butterscotch",
+                title: "Butterscotch Crunch",
+                price: "₹540",
+                img: "/images/butterscotch.jpg",
+              },
+              {
+                name: "strawberry",
+                title: "Strawberry Cream Cake",
+                price: "₹560",
+                img: "/images/STRAWBERRYCAKE.webp",
+              },
+              {
+                name: "vanilla",
+                title: "Vanilla Sprinkle Cake",
+                price: "₹500",
+                img: "/images/venila sprinkle.jpg",
+              },
+              {
+                name: "caramel",
+                title: "Caramel Drizzle Cake",
+                price: "₹590",
+                img: "/images/caramel drizzle.webp",
+              },
+              {
+                name: "oreo",
+                title: "Oreo Crunch Cake",
+                price: "₹570",
+                img: "/images/oreo crunch.jpeg",
+              },
+              {
+                name: "mango",
+                title: "Mango Fresh Cream Cake",
+                price: "₹580",
+                img: "/images/mango.jpeg",
+              },
+              {
+                name: "coffee mocha",
+                title: "Coffee Mocha Cake",
+                price: "₹600",
+                img: "/images/coffee2.jpeg",
+              },
             ]
-              .filter(item => item.name.includes(search))
-              .map(item => (
+              .filter((item) => item.name.includes(search))
+              .map((item) => (
                 <div className="menu-card" key={item.name}>
                   <div className="menu-img-wrapper">
                     <img src={item.img} alt={item.title} />
@@ -194,7 +272,6 @@ const handleLogin = async () => {
                   </button>
                 </div>
               ))}
-
           </div>
         </div>
       </section>
@@ -204,16 +281,29 @@ const handleLogin = async () => {
         <div className="section-inner">
           <h2 className="section-title">Gallery</h2>
           <p className="section-text center">
-            A peek at some of our favorite creations for birthdays, weddings and special days.
+            A peek at some of our favorite creations for birthdays, weddings and
+            special days.
           </p>
 
           <div className="gallery-grid">
-            <div className="gallery-item gallery-birthday"><span>Birthday Cake</span></div>
-            <div className="gallery-item gallery-wedding"><span>Wedding Cake</span></div>
-            <div className="gallery-item gallery-cupcakes"><span>Cupcakes</span></div>
-            <div className="gallery-item gallery-photo"><span>Photo Cake</span></div>
-            <div className="gallery-item gallery-theme"><span>Theme Cake</span></div>
-            <div className="gallery-item gallery-pastries"><span>Pastries</span></div>
+            <div className="gallery-item gallery-birthday">
+              <span>Birthday Cake</span>
+            </div>
+            <div className="gallery-item gallery-wedding">
+              <span>Wedding Cake</span>
+            </div>
+            <div className="gallery-item gallery-cupcakes">
+              <span>Cupcakes</span>
+            </div>
+            <div className="gallery-item gallery-photo">
+              <span>Photo Cake</span>
+            </div>
+            <div className="gallery-item gallery-theme">
+              <span>Theme Cake</span>
+            </div>
+            <div className="gallery-item gallery-pastries">
+              <span>Pastries</span>
+            </div>
           </div>
         </div>
       </section>
@@ -223,16 +313,35 @@ const handleLogin = async () => {
         <div className="section-inner">
           <h2 className="section-title">Our Services</h2>
           <p className="section-text center">
-            We bake for every occasion and customize your order the way you like it.
+            We bake for every occasion and customize your order the way you like
+            it.
           </p>
 
           <div className="card-grid">
-            <div className="card"><h3>Custom Birthday Cakes</h3><p>Personalized designs in your favorite flavors and themes.</p></div>
-            <div className="card"><h3>Wedding Cakes</h3><p>Elegant multi-tier cakes to make your big day even sweeter.</p></div>
-            <div className="card"><h3>Cupcake & Pastry Orders</h3><p>Perfect for parties, office events and small gatherings.</p></div>
-            <div className="card"><h3>Photo & Theme Cakes</h3><p>Cartoon, character and photo cakes for kids and adults.</p></div>
-            <div className="card"><h3>Bulk / Corporate Orders</h3><p>Special pricing and packaging for bulk celebrations.</p></div>
-            <div className="card"><h3>Same-Day Orders*</h3><p>Limited flavors available for same-day pickup (T&amp;C apply).</p></div>
+            <div className="card">
+              <h3>Custom Birthday Cakes</h3>
+              <p>Personalized designs in your favorite flavors and themes.</p>
+            </div>
+            <div className="card">
+              <h3>Wedding Cakes</h3>
+              <p>Elegant multi-tier cakes to make your big day even sweeter.</p>
+            </div>
+            <div className="card">
+              <h3>Cupcake & Pastry Orders</h3>
+              <p>Perfect for parties, office events and small gatherings.</p>
+            </div>
+            <div className="card">
+              <h3>Photo & Theme Cakes</h3>
+              <p>Cartoon, character and photo cakes for kids and adults.</p>
+            </div>
+            <div className="card">
+              <h3>Bulk / Corporate Orders</h3>
+              <p>Special pricing and packaging for bulk celebrations.</p>
+            </div>
+            <div className="card">
+              <h3>Same-Day Orders*</h3>
+              <p>Limited flavors available for same-day pickup (T&amp;C apply).</p>
+            </div>
           </div>
         </div>
       </section>
@@ -247,33 +356,61 @@ const handleLogin = async () => {
               with confirmation and pricing.
             </p>
             <p className="section-text">
-              <strong>Address:</strong> Moonlight Street, Sweet Town, India<br />
-              <strong>Phone:</strong> +91-98765-43210<br />
+              <strong>Address:</strong> Moonlight Street, Sweet Town, India
+              <br />
+              <strong>Phone:</strong> +91-98765-43210
+              <br />
               <strong>Email:</strong> hello@lunabakery.com
             </p>
           </div>
 
-          <form className="contact-form" onsubmit={handleContactSubmit}>
+          <form className="contact-form" onSubmit={handleContactSubmit}>
             <div className="form-row">
-              <input type="text" placeholder="Your name" required />
-              <input type="email" placeholder="Your email" required />
+              <input
+                name="name"
+                type="text"
+                placeholder="Your name"
+                required
+              />
+              <input
+                name="email"
+                type="email"
+                placeholder="Your email"
+                required
+              />
             </div>
             <div className="form-row">
-              <input type="text" placeholder="Phone number" required />
-              <input type="text" placeholder="Cake / order type" required />
+              <input
+                name="phone"
+                type="text"
+                placeholder="Phone number"
+                required
+              />
+              <input
+                name="orderType"
+                type="text"
+                placeholder="Cake / order type (only if custom)"
+              />
             </div>
             <div className="form-row">
-              <input type="date" />
+              <input name="date" type="date" />
             </div>
             <div className="form-row">
-              <textarea rows="4" placeholder="Message / design details" required></textarea>
+              <textarea
+                name="message"
+                rows="4"
+                placeholder="Message / design details"
+                required
+              ></textarea>
             </div>
-            <button type="submit" className="hero-btn">Send Request</button>
+            <button type="submit" className="hero-btn">
+              Send Request
+            </button>
           </form>
         </div>
       </section>
 
-      {/* 🛒 CART SECTION AT BOTTOM */}
+      {/* 🛒 CART SECTION */}
       <section className="section" id="cart">
         <div className="section-inner">
           <h2 className="section-title">Your Cart</h2>
@@ -288,16 +425,16 @@ const handleLogin = async () => {
                 {cart.map((item, index) => (
                   <li key={index} className="cart-item">
                     <div>
-                       Selected item {index + 1}: <span>"{item.title}"</span> : <strong>{item.price}</strong>
+                      Selected item {index + 1}: <span>"{item.title}"</span> :{" "}
+                      <strong>{item.price}</strong>
                     </div>
                     <button
                       className="remove-btn"
                       onClick={() => removeFromCart(index)}
                     >
-                     Remove
+                      Remove
                     </button>
                   </li>
-
                 ))}
               </ul>
 
@@ -305,70 +442,87 @@ const handleLogin = async () => {
                 Total amount: <strong>₹{totalAmount}</strong>
               </p>
 
+              {/* Go to Contact & Orders */}
+              <button
+                className="hero-btn"
+                onClick={() =>
+                  document
+                    .getElementById("contact")
+                    .scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                Proceed to Checkout
+              </button>
+
               <p className="section-text center">
-                Payment mode: <strong>Cash on Delivery</strong><br />
+                Payment mode: <strong>Cash on Delivery</strong>
+                <br />
                 Thank you for choosing Luna Bakery! 🎂
               </p>
             </>
           )}
-
         </div>
       </section>
+
       {/* LOGIN POPUP */}
-{showLogin && (
-  <div className="popup">
-    <div className="popup-box">
-      <h2>Login</h2>
-      <input 
-        type="email" 
-        placeholder="Email" 
-        value={loginEmail} 
-        onChange={(e) => setLoginEmail(e.target.value)} 
-      />
-      <input 
-        type="password" 
-        placeholder="Password" 
-        value={loginPassword} 
-        onChange={(e) => setLoginPassword(e.target.value)} 
-      />
-      <button onClick={() => alert("Login API not connected yet")}>Login</button>
-      <button className="close-btn" onClick={() => setShowLogin(false)}>Close</button>
-    </div>
-  </div>
-)}
+      {showLogin && (
+        <div className="popup">
+          <div className="popup-box">
+            <h2>Login</h2>
+            <input
+              type="email"
+              placeholder="Email"
+              value={loginEmail}
+              onChange={(e) => setLoginEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={loginPassword}
+              onChange={(e) => setLoginPassword(e.target.value)}
+            />
+            <button onClick={handleLogin}>Login</button>
+            <button className="close-btn" onClick={() => setShowLogin(false)}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
-{/* SIGNUP POPUP */}
-{showSignup && (
-  <div className="popup">
-    <div className="popup-box">
-      <h2>Sign Up</h2>
-      <input 
-        type="email" 
-        placeholder="Email" 
-        value={signupEmail} 
-        onChange={(e) => setSignupEmail(e.target.value)} 
-      />
-      <input 
-        type="password" 
-        placeholder="Password" 
-        value={signupPassword} 
-        onChange={(e) => setSignupPassword(e.target.value)} 
-      />
-      <button onClick={() => alert("Signup API not connected yet")}>Sign Up</button>
-      <button className="close-btn" onClick={() => setShowSignup(false)}>Close</button>
-    </div>
-  </div>
-)}
-
+      {/* SIGNUP POPUP */}
+      {showSignup && (
+        <div className="popup">
+          <div className="popup-box">
+            <h2>Sign Up</h2>
+            <input
+              type="email"
+              placeholder="Email"
+              value={signupEmail}
+              onChange={(e) => setSignupEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={signupPassword}
+              onChange={(e) => setSignupPassword(e.target.value)}
+            />
+            <button onClick={handleSignup}>Sign Up</button>
+            <button className="close-btn" onClick={() => setShowSignup(false)}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* FOOTER */}
       <footer className="footer">
         <div className="footer-inner">
           <span className="brand-name small">Luna Bakery</span>
-          <span className="footer-text">© 2025 Luna Bakery. All rights reserved.</span>
+          <span className="footer-text">
+            © 2025 Luna Bakery. All rights reserved.
+          </span>
         </div>
       </footer>
-
     </>
   );
 }

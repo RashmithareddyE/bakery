@@ -1,141 +1,114 @@
 const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
+const path = require("path");
 
 const app = express();
+const PORT = 5000;
 
+// MIDDLEWARE
 app.use(cors());
 app.use(express.json());
 
-// file that stores contact form data (your "database")
-const DATA_FILE = "contact-data.json";
+// FILE PATHS
+const CONTACT_FILE = path.join(__dirname, "contacts.json");
+const USERS_FILE = path.join(__dirname, "users.json");
 
-function readContacts() {
-  if (!fs.existsSync(DATA_FILE)) return [];
-  try {
-    const text = fs.readFileSync(DATA_FILE, "utf8");
-    if (!text.trim()) return [];
-    return JSON.parse(text);
-  } catch (err) {
-    console.error("Error reading contacts:", err);
-    return [];
-  }
+// --------- HELPERS TO READ / WRITE JSON FILES ----------
+function readJson(filePath) {
+  if (!fs.existsSync(filePath)) return [];
+  const data = fs.readFileSync(filePath, "utf-8");
+  if (!data.trim()) return [];
+  return JSON.parse(data);
 }
 
-function writeContacts(list) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(list, null, 2));
+function writeJson(filePath, list) {
+  fs.writeFileSync(filePath, JSON.stringify(list, null, 2));
 }
 
-// simple test route
+// --------- ROOT ROUTE ----------
 app.get("/", (req, res) => {
   res.send("Luna Bakery backend running");
 });
 
-// CONTACT FORM ROUTE
+// --------- UPDATED CONTACT FORM ROUTE ----------
 app.post("/api/contact", (req, res) => {
-  const { name, email, phone, orderType, date, message } = req.body;
+  const { name, email, phone, orderType, date, message, items, totalAmount } =
+    req.body;
 
+  // Required fields (orderType NOT required anymore)
   if (!name || !email || !phone || !message) {
-    return res.status(400).json({
-      success: false,
-      message: "Missing required fields",
-    });
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing required fields" });
   }
 
-  const contacts = readContacts();
+  const contacts = readJson(CONTACT_FILE);
 
   contacts.push({
     name,
     email,
     phone,
-    orderType,
-    date,
+    orderType: orderType || null,
+    date: date || null,
     message,
+    items: items || [],
+    totalAmount: totalAmount || 0,
     createdAt: new Date().toISOString(),
   });
 
-  writeContacts(contacts);
+  writeJson(CONTACT_FILE, contacts);
 
-  res.json({ success: true, message: "Your request has been saved ✅" });
+  res.json({
+    success: true,
+    message: "Your order has been saved!",
+  });
 });
 
-// start server
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log('Backend server running at http://localhost:${PORT}');
-});
-// ===== USERS (LOGIN / SIGNUP) =====
-const USERS_FILE = "users.json";
-
-function readUsers() {
-  if (!fs.existsSync(USERS_FILE)) return [];
-  try {
-    const text = fs.readFileSync(USERS_FILE, "utf8");
-    if (!text.trim()) return [];
-    return JSON.parse(text);
-  } catch (err) {
-    console.error("Error reading users:", err);
-    return [];
-  }
-}
-
-function writeUsers(list) {
-  fs.writeFileSync(USERS_FILE, JSON.stringify(list, null, 2));
-}
-// SIGNUP
+// --------- SIGNUP ROUTE ----------
 app.post("/api/signup", (req, res) => {
-  const { name, email, password } = req.body;
-
-  if (!name || !email || !password) {
-    return res
-      .status(400)
-      .json({ success: false, message: "All fields are required" });
-  }
-
-  const users = readUsers();
-
-  // check if user already exists
-  if (users.find((u) => u.email === email)) {
-    return res
-      .status(400)
-      .json({ success: false, message: "User already exists with this email" });
-  }
-
-  users.push({
-    name,
-    email,
-    password, // plain text just for project (not safe for real app)
-    createdAt: new Date().toISOString(),
-  });
-
-  writeUsers(users);
-
-  res.json({ success: true, message: "Signup successful " });
-});
-// LOGIN
-app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
     return res
       .status(400)
-      .json({ success: false, message: "Email and password required" });
+      .json({ success: false, message: "Email and password are required" });
   }
 
-  const users = readUsers();
-  const user = users.find((u) => u.email === email && u.password === password);
+  const users = readJson(USERS_FILE);
+  const existing = users.find((u) => u.email === email);
+
+  if (existing) {
+    return res
+      .status(400)
+      .json({ success: false, message: "User already exists" });
+  }
+
+  users.push({ email, password });
+  writeJson(USERS_FILE, users);
+
+  res.json({ success: true, message: "Signup successful" });
+});
+
+// --------- LOGIN ROUTE ----------
+app.post("/api/login", (req, res) => {
+  const { email, password } = req.body;
+
+  const users = readJson(USERS_FILE);
+  const user = users.find(
+    (u) => u.email === email && u.password === password
+  );
 
   if (!user) {
     return res
-      .status(401)
+      .status(400)
       .json({ success: false, message: "Invalid email or password" });
   }
 
-  // For project, just send success (no tokens)
-  res.json({
-    success: true,
-    message: `Welcome back, ${user.name}!`,
-    name: user.name,
-    email: user.email,
-  });
+  res.json({ success: true, message: "Login successful" });
+});
+
+// --------- START SERVER ----------
+app.listen(PORT, () => {
+  console.log(`Backend server running at http://localhost:${PORT}`);
 });
