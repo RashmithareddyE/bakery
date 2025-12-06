@@ -1,10 +1,86 @@
 import './style2.css';
 import { useState } from 'react';
+import axios from "axios";
 
 function App() {
+  const [showLogin, setShowLogin] = useState(false);
+  const [showSignup, setShowSignup] = useState(false);
 
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
   const [cart, setCart] = useState([]);
   const [search, setSearch] = useState("");
+  const handleContactSubmit = async (e) => {
+  e.preventDefault();
+const handleSignup = async () => {
+  if (!signupEmail || !signupPassword) {
+    alert("Enter email & password");
+    return;
+  }
+
+  try {
+    const res = await axios.post("http://localhost:5000/api/signup", {
+      email: signupEmail,
+      password: signupPassword
+    });
+
+    alert(res.data.message);
+    setShowSignup(false);
+  } catch (err) {
+    alert("Signup failed");
+  }
+};
+
+// 🔥 STEP 3 — Login Function
+const handleLogin = async () => {
+  if (!loginEmail || !loginPassword) {
+    alert("Enter email & password");
+    return;
+  }
+
+  try {
+    const res = await axios.post("http://localhost:5000/api/login", {
+      email: loginEmail,
+      password: loginPassword
+    });
+
+    alert(res.data.message);
+    setShowLogin(false);
+  } catch (err) {
+    alert("Invalid login details");
+  }
+};
+
+
+  const form = e.target;
+
+  const data = {
+    name: form[0].value,
+    email: form[1].value,
+    phone: form[2].value,
+    orderType: form[3].value,
+    date: form[4].value,
+    message: form[5].value,
+  };
+
+  try {
+    const res = await fetch("http://localhost:5000/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    const result = await res.json();
+    alert(result.message || "Form submitted!");
+    form.reset();
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong. Please try again.");
+  }
+  };
 
   const addToCart = (item) => {
     setCart([...cart, item]);
@@ -55,11 +131,11 @@ function App() {
               <a href="#gallery">Gallery</a>
               <a href="#services">Services</a>
               <a href="#contact">Contact</a>
-              {/* simple Cart link (no icon) */}
               <a href="#cart">Cart</a>
 
-              <a href="#" className="auth-btn">Sign Up</a>
-              <a href="#" className="auth-btn login">Login</a>
+              <span className="auth-btn" onClick={() => setShowSignup(true)}>Sign Up</span>
+              <span className="auth-btn login" onClick={() => setShowLogin(true)}>Login</span>
+
             </div>
 
           </div>
@@ -177,7 +253,7 @@ function App() {
             </p>
           </div>
 
-          <form className="contact-form">
+          <form className="contact-form" onsubmit={handleContactSubmit}>
             <div className="form-row">
               <input type="text" placeholder="Your name" required />
               <input type="email" placeholder="Your email" required />
@@ -238,6 +314,52 @@ function App() {
 
         </div>
       </section>
+      {/* LOGIN POPUP */}
+{showLogin && (
+  <div className="popup">
+    <div className="popup-box">
+      <h2>Login</h2>
+      <input 
+        type="email" 
+        placeholder="Email" 
+        value={loginEmail} 
+        onChange={(e) => setLoginEmail(e.target.value)} 
+      />
+      <input 
+        type="password" 
+        placeholder="Password" 
+        value={loginPassword} 
+        onChange={(e) => setLoginPassword(e.target.value)} 
+      />
+      <button onClick={() => alert("Login API not connected yet")}>Login</button>
+      <button className="close-btn" onClick={() => setShowLogin(false)}>Close</button>
+    </div>
+  </div>
+)}
+
+{/* SIGNUP POPUP */}
+{showSignup && (
+  <div className="popup">
+    <div className="popup-box">
+      <h2>Sign Up</h2>
+      <input 
+        type="email" 
+        placeholder="Email" 
+        value={signupEmail} 
+        onChange={(e) => setSignupEmail(e.target.value)} 
+      />
+      <input 
+        type="password" 
+        placeholder="Password" 
+        value={signupPassword} 
+        onChange={(e) => setSignupPassword(e.target.value)} 
+      />
+      <button onClick={() => alert("Signup API not connected yet")}>Sign Up</button>
+      <button className="close-btn" onClick={() => setShowSignup(false)}>Close</button>
+    </div>
+  </div>
+)}
+
 
       {/* FOOTER */}
       <footer className="footer">
