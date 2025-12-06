@@ -1,9 +1,253 @@
+import './style2.css';
+import { useState } from 'react';
+
 function App() {
+
+  const [cart, setCart] = useState([]);
+  const [search, setSearch] = useState("");
+
+  const addToCart = (item) => {
+    setCart([...cart, item]);
+  };
+  const removeFromCart = (indexToRemove) => {
+  setCart(cart.filter((_, index) => index !== indexToRemove));
+  };
+
+
+  const totalAmount = cart.reduce((sum, item) => {
+    const num = Number(item.price.replace(/[^\d]/g, ""));
+    return sum + (isNaN(num) ? 0 : num);
+  }, 0);
+
   return (
-    <div>
-      <h1>Luna Bakery</h1>
-      <p>React is working 🎂</p>
-    </div>
+    <>
+      {/* HERO + NAVBAR */}
+      <section className="hero" id="home">
+
+        <nav className="navbar">
+          <div className="nav-inner">
+
+            <div className="nav-brand">
+              <div className="brand-name">Luna Bakery</div>
+              <div className="brand-caption">Moonlit flavors, freshly baked.</div>
+            </div>
+
+            <form
+              className="nav-search"
+              onSubmit={(e) => {
+                e.preventDefault();
+                document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Search cakes..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value.toLowerCase())}
+              />
+            </form>
+
+            <div className="nav-links">
+              <a href="#home">Home</a>
+              <a href="#about">About</a>
+              <a href="#menu">Menu</a>
+              <a href="#gallery">Gallery</a>
+              <a href="#services">Services</a>
+              <a href="#contact">Contact</a>
+              {/* simple Cart link (no icon) */}
+              <a href="#cart">Cart</a>
+
+              <a href="#" className="auth-btn">Sign Up</a>
+              <a href="#" className="auth-btn login">Login</a>
+            </div>
+
+          </div>
+        </nav>
+
+        <div className="hero-content">
+          <h1 className="hero-brand italic">Luna Bakery</h1>
+          <p className="hero-caption">Treat yourself to freshly baked happiness.</p>
+        </div>
+
+      </section>
+
+      {/* ABOUT */}
+      <section className="section" id="about">
+        <div className="section-inner">
+          <h2 className="section-title">About Us</h2>
+          <p className="section-text center">
+            At Luna Bakery, we believe every treat should feel like a little piece of magic.
+            From freshly baked cakes to handcrafted pastries, we bring sweetness to your moments
+            with love and care. Our mission is simple to make your day brighter, one bite at a time.
+          </p>
+        </div>
+      </section>
+
+      {/* MENU */}
+      <section className="section" id="menu">
+        <div className="section-inner">
+          <h2 className="section-title">Our Menu</h2>
+          <p className="section-text center">
+            Choose from our customer-favorite cakes and sweet treats.
+          </p>
+
+          <div className="menu-grid">
+            {[
+              { name: "chocolate", title: "Classic Chocolate Cake", price: "₹550", img: "/images/classy chocolate.jpg" },
+              { name: "red velvet", title: "Red Velvet Delight", price: "₹580", img: "/images/red velvet.jpeg" },
+              { name: "black forest", title: "Black Forest Bliss", price: "₹520", img: "/images/balck-forest.jpeg" },
+              { name: "butterscotch", title: "Butterscotch Crunch", price: "₹540", img: "/images/butterscotch.jpg" },
+              { name: "strawberry", title: "Strawberry Cream Cake", price: "₹560", img: "/images/STRAWBERRYCAKE.webp" },
+              { name: "vanilla", title: "Vanilla Sprinkle Cake", price: "₹500", img: "/images/venila sprinkle.jpg" },
+              { name: "caramel", title: "Caramel Drizzle Cake", price: "₹590", img: "/images/caramel drizzle.webp" },
+              { name: "oreo", title: "Oreo Crunch Cake", price: "₹570", img: "/images/oreo crunch.jpeg" },
+              { name: "mango", title: "Mango Fresh Cream Cake", price: "₹580", img: "/images/mango.jpeg" },
+              { name: "coffee mocha", title: "Coffee Mocha Cake", price: "₹600", img: "/images/coffee2.jpeg" },
+            ]
+              .filter(item => item.name.includes(search))
+              .map(item => (
+                <div className="menu-card" key={item.name}>
+                  <div className="menu-img-wrapper">
+                    <img src={item.img} alt={item.title} />
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p className="price">{item.price}</p>
+                  <button className="add-btn" onClick={() => addToCart(item)}>
+                    Add to Cart
+                  </button>
+                </div>
+              ))}
+
+          </div>
+        </div>
+      </section>
+
+      {/* GALLERY */}
+      <section className="section" id="gallery">
+        <div className="section-inner">
+          <h2 className="section-title">Gallery</h2>
+          <p className="section-text center">
+            A peek at some of our favorite creations for birthdays, weddings and special days.
+          </p>
+
+          <div className="gallery-grid">
+            <div className="gallery-item gallery-birthday"><span>Birthday Cake</span></div>
+            <div className="gallery-item gallery-wedding"><span>Wedding Cake</span></div>
+            <div className="gallery-item gallery-cupcakes"><span>Cupcakes</span></div>
+            <div className="gallery-item gallery-photo"><span>Photo Cake</span></div>
+            <div className="gallery-item gallery-theme"><span>Theme Cake</span></div>
+            <div className="gallery-item gallery-pastries"><span>Pastries</span></div>
+          </div>
+        </div>
+      </section>
+
+      {/* SERVICES */}
+      <section className="section" id="services">
+        <div className="section-inner">
+          <h2 className="section-title">Our Services</h2>
+          <p className="section-text center">
+            We bake for every occasion and customize your order the way you like it.
+          </p>
+
+          <div className="card-grid">
+            <div className="card"><h3>Custom Birthday Cakes</h3><p>Personalized designs in your favorite flavors and themes.</p></div>
+            <div className="card"><h3>Wedding Cakes</h3><p>Elegant multi-tier cakes to make your big day even sweeter.</p></div>
+            <div className="card"><h3>Cupcake & Pastry Orders</h3><p>Perfect for parties, office events and small gatherings.</p></div>
+            <div className="card"><h3>Photo & Theme Cakes</h3><p>Cartoon, character and photo cakes for kids and adults.</p></div>
+            <div className="card"><h3>Bulk / Corporate Orders</h3><p>Special pricing and packaging for bulk celebrations.</p></div>
+            <div className="card"><h3>Same-Day Orders*</h3><p>Limited flavors available for same-day pickup (T&amp;C apply).</p></div>
+          </div>
+        </div>
+      </section>
+
+      {/* CONTACT */}
+      <section className="section" id="contact">
+        <div className="section-inner contact-layout">
+          <div className="contact-info">
+            <h2 className="section-title">Contact & Orders</h2>
+            <p className="section-text">
+              Have a cake in mind? Share your details and we’ll get back to you
+              with confirmation and pricing.
+            </p>
+            <p className="section-text">
+              <strong>Address:</strong> Moonlight Street, Sweet Town, India<br />
+              <strong>Phone:</strong> +91-98765-43210<br />
+              <strong>Email:</strong> hello@lunabakery.com
+            </p>
+          </div>
+
+          <form className="contact-form">
+            <div className="form-row">
+              <input type="text" placeholder="Your name" required />
+              <input type="email" placeholder="Your email" required />
+            </div>
+            <div className="form-row">
+              <input type="text" placeholder="Phone number" required />
+              <input type="text" placeholder="Cake / order type" required />
+            </div>
+            <div className="form-row">
+              <input type="date" />
+            </div>
+            <div className="form-row">
+              <textarea rows="4" placeholder="Message / design details" required></textarea>
+            </div>
+            <button type="submit" className="hero-btn">Send Request</button>
+          </form>
+        </div>
+      </section>
+
+      {/* 🛒 CART SECTION AT BOTTOM */}
+      <section className="section" id="cart">
+        <div className="section-inner">
+          <h2 className="section-title">Your Cart</h2>
+
+          {cart.length === 0 ? (
+            <p className="section-text center">
+              No items in cart yet. Please add some cakes from the menu. ✨
+            </p>
+          ) : (
+            <>
+              <ul className="cart-list">
+                {cart.map((item, index) => (
+                  <li key={index} className="cart-item">
+                    <div>
+                       Selected item {index + 1}: <span>"{item.title}"</span> : <strong>{item.price}</strong>
+                    </div>
+                    <button
+                      className="remove-btn"
+                      onClick={() => removeFromCart(index)}
+                    >
+                     Remove
+                    </button>
+                  </li>
+
+                ))}
+              </ul>
+
+              <p className="cart-total">
+                Total amount: <strong>₹{totalAmount}</strong>
+              </p>
+
+              <p className="section-text center">
+                Payment mode: <strong>Cash on Delivery</strong><br />
+                Thank you for choosing Luna Bakery! 🎂
+              </p>
+            </>
+          )}
+
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="footer">
+        <div className="footer-inner">
+          <span className="brand-name small">Luna Bakery</span>
+          <span className="footer-text">© 2025 Luna Bakery. All rights reserved.</span>
+        </div>
+      </footer>
+
+    </>
   );
 }
 
