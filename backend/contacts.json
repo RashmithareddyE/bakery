@@ -52,5 +52,23 @@
     ],
     "totalAmount": 600,
     "createdAt": "2025-12-06T19:13:37.265Z"
+  },
+  {
+    "name": "EDDEY RASHMITHA",
+    "email": "erashmitha2007@gmail.com",
+    "phone": "09390243636",
+    "orderType": null,
+    "date": "2025-12-12",
+    "message": "hello",
+    "items": [
+      {
+        "name": "coffee mocha",
+        "title": "Coffee Mocha Cake",
+        "price": "₹600",
+        "img": "/images/coffee2.jpeg"
+      }
+    ],
+    "totalAmount": 600,
+    "createdAt": "2025-12-08T05:02:46.833Z"
   }
 ]
