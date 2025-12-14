@@ -14,7 +14,6 @@ function App() {
 
   const [cart, setCart] = useState([]);
   const [search, setSearch] = useState("");
-
   // ✉️ CONTACT FORM HANDLER
   const handleContactSubmit = async (e) => {
     e.preventDefault();
