@@ -474,7 +474,7 @@ function App() {
               value={loginEmail}
               onChange={(e) => setLoginEmail(e.target.value)}
             />
-            <input
+            <input  
               type="password"
               placeholder="Password"
               value={loginPassword}
