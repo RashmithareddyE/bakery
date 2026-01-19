@@ -59,24 +59,30 @@ function App() {
     };
 
     try {
-      const res = await fetch("https://bakery-yq6s.onrender.com", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+  const res = await fetch("https://bakery-yq6s.onrender.com/api/contact", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
 
-      const result = await res.json();
-      alert(result.message || "Form submitted!");
+  const result = await res.json();
 
-      form.reset();
-      if (hasCartItems) {
-        setCart([]); // clear cart only if it was used
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong. Please try again.");
-    }
-  };
+  if (!res.ok) {
+    alert(result.message || "Server error");
+    return;
+  }
+
+  alert(result.message || "Form submitted successfully!");
+
+  form.reset();
+  if (hasCartItems) {
+    setCart([]);
+  }
+} catch (err) {
+  console.error(err);
+  alert("Server is waking up. Please try again in a few seconds.");
+}
+
 
   // 🟣 SIGNUP FUNCTION (FRONTEND -> BACKEND)
   const handleSignup = async () => {
@@ -86,7 +92,7 @@ function App() {
     }
 
     try {
-      const res = await axios.post("https://bakery-yq6s.onrender.com", {
+      const res = await axios.post("https://bakery-yq6s.onrender.com/api/contact", {
         email: signupEmail,
         password: signupPassword,
       });
@@ -107,7 +113,7 @@ function App() {
     }
 
     try {
-      const res = await axios.post("https://bakery-yq6s.onrender.com", {
+      const res = await axios.post("https://bakery-yq6s.onrender.com/api/contact", {
         email: loginEmail,
         password: loginPassword,
       });
@@ -541,6 +547,7 @@ function App() {
       </footer>
     </>
   );
+}
 }
 
 export default App;
