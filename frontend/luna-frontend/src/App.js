@@ -14,11 +14,27 @@ function App() {
 
   const [cart, setCart] = useState([]);
   const [search, setSearch] = useState("");
-  // ✉️ CONTACT FORM HANDLER
+  //  CONTACT FORM HANDLER
   const handleContactSubmit = async (e) => {
     e.preventDefault();
 
     const form = e.target;
+    const email = form.email.value;
+    const phone = form.phone.value;
+ 
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phonePattern = /^[6-9]\d{9}$/;
+
+  if (!emailPattern.test(email)) {
+    alert("Please enter a valid email address");
+    return;
+  }
+
+  if (!phonePattern.test(phone)) {
+    alert("Please enter a valid 10-digit mobile number");
+    return;
+  }
+
 
     const hasCartItems = cart.length > 0;
     const orderTypeText = form.orderType.value.trim();
@@ -440,6 +456,7 @@ function App() {
               <p className="cart-total">
                 Total amount: <strong>₹{totalAmount}</strong>
               </p>
+              
 
               {/* Go to Contact & Orders */}
               <button
