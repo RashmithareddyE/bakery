@@ -59,7 +59,7 @@ function App() {
     };
 
     try {
-      const res = await fetch("http://localhost:5000/api/contact", {
+      const res = await fetch("https://bakery-yq6s.onrender.com", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -86,7 +86,7 @@ function App() {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/signup", {
+      const res = await axios.post("https://bakery-yq6s.onrender.com", {
         email: signupEmail,
         password: signupPassword,
       });
@@ -107,7 +107,7 @@ function App() {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/login", {
+      const res = await axios.post("https://bakery-yq6s.onrender.com", {
         email: loginEmail,
         password: loginPassword,
       });
