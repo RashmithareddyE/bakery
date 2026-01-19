@@ -4,7 +4,8 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
+
 
 // MIDDLEWARE
 app.use(cors());
@@ -110,5 +111,5 @@ app.post("/api/login", (req, res) => {
 
 // --------- START SERVER ----------
 app.listen(PORT, () => {
-  console.log(`Backend server running at http://localhost:${PORT}`);
+  console.log(`Backend server running on port ${PORT}`);
 });
