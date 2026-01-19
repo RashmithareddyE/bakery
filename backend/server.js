@@ -6,16 +6,15 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
-// MIDDLEWARE
+// ---------------- MIDDLEWARE ----------------
 app.use(cors());
 app.use(express.json());
 
-// FILE PATHS
+// ---------------- FILE PATHS ----------------
 const CONTACT_FILE = path.join(__dirname, "contacts.json");
 const USERS_FILE = path.join(__dirname, "users.json");
 
-// --------- HELPERS TO READ / WRITE JSON FILES ----------
+// ---------------- HELPERS ----------------
 function readJson(filePath) {
   if (!fs.existsSync(filePath)) return [];
   const data = fs.readFileSync(filePath, "utf-8");
@@ -23,21 +22,20 @@ function readJson(filePath) {
   return JSON.parse(data);
 }
 
-function writeJson(filePath, list) {
-  fs.writeFileSync(filePath, JSON.stringify(list, null, 2));
+function writeJson(filePath, data) {
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
 
-// --------- ROOT ROUTE ----------
+// ---------------- ROOT ----------------
 app.get("/", (req, res) => {
   res.send("Luna Bakery backend running");
 });
 
-// --------- UPDATED CONTACT FORM ROUTE ----------
+// ---------------- CONTACT ----------------
 app.post("/api/contact", (req, res) => {
   const { name, email, phone, orderType, date, message, items, totalAmount } =
     req.body;
 
-  // Required fields (orderType NOT required anymore)
   if (!name || !email || !phone || !message) {
     return res
       .status(400)
@@ -66,20 +64,19 @@ app.post("/api/contact", (req, res) => {
   });
 });
 
-// --------- SIGNUP ROUTE ----------
+// ---------------- SIGNUP ----------------
 app.post("/api/signup", (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
     return res
       .status(400)
-      .json({ success: false, message: "Email and password are required" });
+      .json({ success: false, message: "Email and password required" });
   }
 
   const users = readJson(USERS_FILE);
-  const existing = users.find((u) => u.email === email);
 
-  if (existing) {
+  if (users.find((u) => u.email === email)) {
     return res
       .status(400)
       .json({ success: false, message: "User already exists" });
@@ -91,7 +88,7 @@ app.post("/api/signup", (req, res) => {
   res.json({ success: true, message: "Signup successful" });
 });
 
-// --------- LOGIN ROUTE ----------
+// ---------------- LOGIN ----------------
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
 
@@ -109,7 +106,7 @@ app.post("/api/login", (req, res) => {
   res.json({ success: true, message: "Login successful" });
 });
 
-// --------- START SERVER ----------
+// ---------------- START SERVER ----------------
 app.listen(PORT, () => {
-  console.log(`Backend server running on port ${PORT}`);
+  console.log(`Backend running on port ${PORT}`);
 });
