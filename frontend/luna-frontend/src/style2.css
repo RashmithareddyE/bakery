@@ -286,12 +286,12 @@ body {
   background-position: center;
 }
 .gallery-photo {
-  background-image: url("./images/photo cake.webp");
+  background-image: url("./images/photocake.webp");
   background-size: cover;
   background-position: center;
 }
 .gallery-theme {
-  background-image: url("./images/theme cake.png");
+  background-image: url("./images/themecake.png");
   background-size: cover;
   background-position: center;
 }
