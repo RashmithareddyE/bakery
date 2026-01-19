@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/bakery/static/css/main.7e3a2f1b.css",
-    "main.js": "/bakery/static/js/main.bf6d82d4.js",
+    "main.js": "/bakery/static/js/main.c44c7d97.js",
     "static/media/themecake.png": "/bakery/static/media/themecake.fdf980dd6af3339a9f5b.png",
     "static/media/cupcakes.avif": "/bakery/static/media/cupcakes.6f19f85253bb286524d6.avif",
     "static/media/wedding.jpg": "/bakery/static/media/wedding.865676debc3878b67e1e.jpg",
@@ -11,10 +11,10 @@
     "static/media/photocake.webp": "/bakery/static/media/photocake.ad810a72fa82e28efe8e.webp",
     "index.html": "/bakery/index.html",
     "main.7e3a2f1b.css.map": "/bakery/static/css/main.7e3a2f1b.css.map",
-    "main.bf6d82d4.js.map": "/bakery/static/js/main.bf6d82d4.js.map"
+    "main.c44c7d97.js.map": "/bakery/static/js/main.c44c7d97.js.map"
   },
   "entrypoints": [
     "static/css/main.7e3a2f1b.css",
-    "static/js/main.bf6d82d4.js"
+    "static/js/main.c44c7d97.js"
   ]
 }
