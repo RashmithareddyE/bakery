@@ -36,5 +36,34 @@
     "items": [],
     "totalAmount": 0,
     "createdAt": "2026-01-01T10:55:20.027Z"
+  },
+  {
+    "name": "EDDEY RASHMITHA",
+    "email": "erashmitha2007@gmail.com",
+    "phone": "9390243636",
+    "orderType": "wedding cake",
+    "date": "2026-01-30",
+    "message": "k\n",
+    "items": [
+      {
+        "name": "red velvet",
+        "title": "Red Velvet Delight",
+        "price": "₹580",
+        "img": "/images/redvelvet.jpeg"
+      }
+    ],
+    "totalAmount": 580,
+    "createdAt": "2026-01-19T18:36:33.943Z"
+  },
+  {
+    "name": "EDDEY RASHMITHA",
+    "email": "eddeyrashmitha@gmail.com",
+    "phone": "9390243636",
+    "orderType": "wedding cake",
+    "date": "2026-01-23",
+    "message": "dd",
+    "items": [],
+    "totalAmount": 0,
+    "createdAt": "2026-01-20T04:23:32.081Z"
   }
 ]

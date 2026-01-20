@@ -59,30 +59,24 @@ function App() {
     };
 
     try {
-  const res = await fetch("https://bakery-yq6s.onrender.com/api/contact", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+      const res = await fetch("http://localhost:5000/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-  const result = await res.json();
+      const result = await res.json();
+      alert(result.message || "Form submitted!");
 
-  if (!res.ok) {
-    alert(result.message || "Server error");
-    return;
-  }
-
-  alert(result.message || "Form submitted successfully!");
-
-  form.reset();
-  if (hasCartItems) {
-    setCart([]);
-  }
-} catch (err) {
-  console.error(err);
-  alert("Server is waking up. Please try again in a few seconds.");
-}
-
+      form.reset();
+      if (hasCartItems) {
+        setCart([]); // clear cart only if it was used
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong. Please try again.");
+    }
+  };
 
   // 🟣 SIGNUP FUNCTION (FRONTEND -> BACKEND)
   const handleSignup = async () => {
@@ -92,7 +86,7 @@ function App() {
     }
 
     try {
-      const res = await axios.post("https://bakery-yq6s.onrender.com/api/contact", {
+      const res = await axios.post("http://localhost:5000/api/signup", {
         email: signupEmail,
         password: signupPassword,
       });
@@ -113,7 +107,7 @@ function App() {
     }
 
     try {
-      const res = await axios.post("https://bakery-yq6s.onrender.com/api/contact", {
+      const res = await axios.post("http://localhost:5000/api/login", {
         email: loginEmail,
         password: loginPassword,
       });
@@ -223,61 +217,61 @@ function App() {
                 name: "chocolate",
                 title: "Classic Chocolate Cake",
                 price: "₹550",
-                img: process.env.PUBLIC_URL + "/images/classychocolate.jpg",
+                img: require( "./images/classychocolate.jpg"),
               },
               {
                 name: "red velvet",
                 title: "Red Velvet Delight",
                 price: "₹580",
-                img: process.env.PUBLIC_URL + "/images/redvelvet.jpeg",
+                img:require( "./images/redvelvet.jpeg"),
               },
               {
                 name: "black forest",
                 title: "Black Forest Bliss",
                 price: "₹520",
-                img: process.env.PUBLIC_URL + "/images/balckforest.jpeg",
+                img:require( "./images/blackforest.jpeg"),
               },
               {
                 name: "butterscotch",
                 title: "Butterscotch Crunch",
                 price: "₹540",
-                img: process.env.PUBLIC_URL + "/images/butterscotch.jpg",
+                img:require( "./images/butterscotch.jpg"),
               },
               {
                 name: "strawberry",
                 title: "Strawberry Cream Cake",
                 price: "₹560",
-                img: process.env.PUBLIC_URL + "/images/STRAWBERRYCAKE.webp" ,
+                img: require("./images/STRAWBERRYCAKE.webp"),
               },
               {
                 name: "vanilla",
                 title: "Vanilla Sprinkle Cake",
                 price: "₹500",
-                img: process.env.PUBLIC_URL + "/images/venilasprinkle.jpg",
+                img: require("./images/venilasprinkle.jpg"),
               },
               {
                 name: "caramel",
                 title: "Caramel Drizzle Cake",
                 price: "₹590",
-                img: process.env.PUBLIC_URL + "/images/carameldrizzle.webp",
+                img: require("./images/carameldrizzle.webp"),
               },
               {
                 name: "oreo",
                 title: "Oreo Crunch Cake",
                 price: "₹570",
-                img: process.env.PUBLIC_URL + "/images/oreocrunch.jpeg",
+                img: require("./images/oreocrunch.jpeg"),
               },
               {
                 name: "mango",
                 title: "Mango Fresh Cream Cake",
                 price: "₹580",
-                img: process.env.PUBLIC_URL + "/images/mango.jpeg",
+                img: require("./images/mango.jpeg"),
               },
               {
                 name: "coffee mocha",
                 title: "Coffee Mocha Cake",
                 price: "₹600",
-                img: process.env.PUBLIC_URL + "/images/coffee2.jpeg",
+                img: require("./images/coffee2.jpeg"),
               },
             ]
               .filter((item) => item.name.includes(search))
@@ -547,7 +541,6 @@ function App() {
       </footer>
     </>
   );
-}
 }
 
 export default App;
